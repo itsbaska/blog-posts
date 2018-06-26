@@ -1,0 +1,145 @@
+03 - Polymorphism in Elixir
+
+Polymporphism in programming is when you can apply one behaviour to a variety of different types of data. In OOP, or more specifically Ruby you can define the same behaviour on different classes. Polymporphism in Elixir can be achieved with the concept of Protocols. Protocols define the function that must be provided to achieve a specific behaviour. Protocol implementations don't need to be within a specific module. This means that you can extend module functionality without having to add code to them. 
+
+Here is a sample code that calculates the area of a rectangle and prints it on the console.
+
+
+defmodule Rectangle do
+  defstruct length: 0, width: 0
+
+  def area(%{length: length, width: width}) do
+    length * width
+  end
+end
+
+defmodule Printer do
+  def print(%Rectangle{} = shape) do
+    IO.puts Rectangle.area(shape)
+  end
+end
+
+
+Currently in the code below if we add a new shape we would have to modify the current code to accomodate for the new shape. in order to print the area of the circle we have to write a print function that works for the circle. We want to be able to add new shapes without having to create more print functions.
+
+
+defmodule Circle do
+  defstruct radius: 0
+
+  def area(%{radius: radius}) do
+    :math.pi() * :math.pow(radius, 2)
+  end
+end
+
+defmodule Printer do
+  def print(%Rectangle{} = shape) do
+    IO.puts Rectangle.area(shape)
+  end
+
+  def print(%Circle{} = shape) do
+    IO.puts Circle.area(shape)
+  end
+end
+
+
+Enter Protocols.
+Protocols are defined with function definitions without the body of the function. This declares the functions that the Protocol will implement. You can think of the Protocol as the blueprint that lists the functions that will be used. 
+
+I am only declaring the head of the function and not the whole function.
+
+
+defprotocol Area do
+  def calc(shape)
+end
+
+
+The implementation of a Protocol is done seperately. Use defimpl macro to define the functions that the Protocol will implement. 
+Here I have Module with a struct for a rectangle. Rather than just writing a function that calculates the area of a rectangle inside the Module, I am wrapping the function inside of a defimpl.
+
+
+defmodule Rectangle do
+  defstruct length: 0, width: 0
+end
+
+defimpl Area, for: Rectangle do  
+  def calc(%{length: length, width: width}) do
+    length * width
+  end
+end
+
+
+And I can create another module for a circle, and declare a defimpl for the circle. Note that I am using the same names for the functions. 
+
+
+defmodule Circle do
+  defstruct radius: 0
+end
+
+defimpl Area, for: Circle do
+  def calc(%{radius: radius}) do
+    :math.pi() * :math.pow(radius, 2)
+  end
+end
+
+
+And in the print function I wouldn't need to change anything, as adding new shapes won't have any effect on printing the area.
+
+
+defmodule Printer do
+  def print(shape) do
+    IO.puts Area.calc(shape)
+  end
+end
+
+
+In addition to being able to add new types without modifying current code, we can also add more functionality easily. If I wanted to be able to calculate the perimeter all I would have to do is create another Protocol.
+
+
+defprotocol Area do
+  def calc(shape)
+end
+
+defmodule Rectangle do
+  defstruct length: 0, width: 0
+
+  defimpl Area do
+    def calc(%{length: length, width: width}) do
+      length * width
+    end
+  end
+end
+
+defprotocol Perimeter do
+  def calc(shape)
+end
+
+defmodule Printer do
+  def print(shape) do
+    IO.puts Area.calc(shape)
+    IO.puts Perimeter.calc(shape)
+  end
+end
+
+defmodule Circle do
+  defstruct radius: 0
+
+  defimpl Area do
+    def calc(%{radius: radius}) do
+      :math.pi() * :math.pow(radius, 2)
+    end
+  end
+
+  defimpl Perimeter do
+    def calc(%{radius: radius}) do
+      2 * :math.pi() * radius
+    end
+  end
+end
+
+defimpl Perimeter, for: Rectangle do
+  def calc(%{length: length, width: width}) do
+    2 * length + 2 * width
+  end
+end
+
+

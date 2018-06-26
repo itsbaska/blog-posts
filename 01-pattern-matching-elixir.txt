@@ -1,0 +1,39 @@
+01 - Pattern Matching with Elixir
+Thursday, May 17, 2018
+
+This week I have been working on koans and katas to learn Elixir. I started my learning of Elixir with implementing some koans. When implementing the koans it didn't seem too overwhelming. I got the koans to pass the tests fairly quickly. I somehow was able to get things working without really knowing what was happening. After finishing my koans it seemed only natural that I would move on to figuring out the katas. I started working on the Bowling Kata, and that was when I realised that learning Elixir would be a whole different way of thinking than what I was used to. 
+
+The biggest thing to wrap my head around so far has been the use of pattern matching. The "=" operator is not what you think it is. With object oriented programming the equal operator is used for assigning values to a variable. In Elixir "=" is not used for assigning a value to a variable, it is used for asserting the expressions on the left side of the operator is equal to the expressions on the right side. The "=" is more comparable to the equals sign in algebra. If you know the value of x, you can figure out the value of a, so if the match succeeds it returns the value of the equation, otherwise it will throw an error. This concept has been something I hadn't thought of since secondary school.
+
+For example:
+
+```iex> x = a + 1```
+
+
+Pattern matching can be used with a few different data structures like Lists and Tuples.
+```iex> list = [1, 2, 3]
+[1, 2, 3]
+iex> [a, b, c ] = list
+[1, 2, 3]
+iex> a
+1
+iex> b
+2
+iex> c
+3```
+
+Elixir is not only able to bind the variable "list" to [1, 2, 3], but it is also able to match the values within the list that contains the three variables. A pattern - the left side of the equals sign, is matched if the values - the right side of the equals, have the same structure. And the same applies to more complex data structures like nested lists. And if the pattern is not matched a 'MatchError' is returned:
+
+```iex> list = [1, 2, 3]
+[1, 2, 3]
+iex> [a, 1, b ] = list
+** (MatchError) no match of right hand side value: [1, 2, 3]```
+
+If there is some arbitrary value that you don't need to know about, and would like to ignore, an "_" can be used instead of the a variable. The underscore acts like a variable but it discards the value.
+
+```iex> [1, _, _] = [1, 2, 3]
+[1, 2, 3]
+iex> [1, _, _] = [1, "cat", "dog"]
+[1, "cat", "dog"]```
+
+Coming from a object oriented language like Ruby, pattern matching has been a lot for me to take in, but I am starting to see how patterns can be used in a variety of ways without thinking of each thing as an object. 
